@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArquiTetris Feng Shui</title>
+    <style>
+        body {
+            margin: 0;
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #gameContainer {
+            position: relative;
+            background: #fff;
+            background-image: linear-gradient(#ccc 1px, transparent 1px), 
+                             linear-gradient(90deg, #ccc 1px, transparent 1px);
+            background-size: 15px 15px; /* Fondo de cuaderno rayado */
+        }
+        #tips {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff4444; /* Rojo mexicano */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer"></div>
+    <div id="tips"></div>
+
+    <script src="https://pixijs.download/release/pixi.js"></script>
+    <script>
+        // Configuración de PixiJS
+        const app = new PIXI.Application({
+            width: 800,
+            height: 600,
+            backgroundColor: 0x000000,
+            transparent: true
+        });
+        document.getElementById('gameContainer').appendChild(app.view);
+
+        // Escala: 1m = 100px, 15cm = 15px
+        const SCALE = 100;
+        const GRID_SIZE = 15;
+
+        // Bloques de muros
+        const blocks = [
+            { width: 15, height: 100 }, // 15cm x 1m
+            { width: 15, height: 50 }   // 15cm x 0.5m
+        ];
+
+        let currentBlock = null;
+        let placedBlocks = [];
+
+        // Grid de fondo
+        const grid = new PIXI.Graphics();
+        for (let x = 0; x < app.screen.width; x += GRID_SIZE) {
+            grid.lineStyle(1, 0xcccccc, 0.5);
+            grid.moveTo(x, 0);
+            grid.lineTo(x, app.screen.height);
+        }
+        for (let y = 0; y < app.screen.height; y += GRID_SIZE) {
+            grid.lineStyle(1, 0xcccccc, 0.5);
+            grid.moveTo(0, y);
+            grid.lineTo(app.screen.width, y);
+        }
+        app.stage.addChild(grid);
+
+        // Contenedor de bloques
+        const blockContainer = new PIXI.Container();
+        app.stage.addChild(blockContainer);
+
+        // Brújula Luo Pan (círculo simple)
+        const luopan = new PIXI.Graphics();
+        luopan.beginFill(0x00ff00); // Verde mexicano
+        luopan.drawCircle(0, 0, 50);
+        luopan.endFill();
+        luopan.x = 750;
+        luopan.y = 50;
+        luopan.interactive = true;
+        luopan.buttonMode = true;
+        let rotation = 0;
+        luopan.on('click', () => {
+            rotation += 45;
+            luopan.rotation = rotation * Math.PI / 180;
+            // Aquí puedes añadir lógica de Feng Shui según orientación
+        });
+        app.stage.addChild(luopan);
+
+        // Crear bloque
+        function createBlock(type) {
+            const block = new PIXI.Graphics();
+            block.beginFill(0xff4444); // Rojo vibrante
+            block.drawRect(0, 0, blocks[type].width, blocks[type].height);
+            block.endFill();
+            block.interactive = true;
+            block.buttonMode = true;
+            block.x = 50;
+            block.y = 50 + type * 120;
+
+            block.on('pointerdown', onDragStart)
+                .on('pointermove', onDragMove)
+                .on('pointerup', onDragEnd);
+
+            blockContainer.addChild(block);
+            return block;
+        }
+
+        // Drag and drop
+        function onDragStart(event) {
+            this.data = event.data;
+            this.dragging = true;
+            this.alpha = 0.8;
+        }
+
+        function onDragMove() {
+            if (this.dragging) {
+                const newPosition = this.data.getLocalPosition(this.parent);
+                this.x = Math.round(newPosition.x / GRID_SIZE) * GRID_SIZE;
+                this.y = Math.round(newPosition.y / GRID_SIZE) * GRID_SIZE;
+                checkFengShui(this);
+            }
+        }
+
+        function onDragEnd() {
+            this.dragging = false;
+            this.data = null;
+            this.alpha = 1;
+            placedBlocks.push(this);
+            currentBlock = createBlock(Math.floor(Math.random() * blocks.length));
+        }
+
+        // Verificar Feng Shui
+        function checkFengShui(block) {
+            const tips = document.getElementById('tips');
+            if (block.x > 300 && block.x < 500 && block.y > 200 && block.y < 400) {
+                tips.style.display = 'block';
+                tips.innerText = "¡Cuidado! Evita bloquear el centro para un mejor flujo de Chi.";
+            } else {
+                tips.style.display = 'none';
+            }
+        }
+
+        // Rotar bloque
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && currentBlock) {
+                const temp = currentBlock.width;
+                currentBlock.width = currentBlock.height;
+                currentBlock.height = temp;
+                currentBlock.clear();
+                currentBlock.beginFill(0xff4444);
+                currentBlock.drawRect(0, 0, currentBlock.width, currentBlock.height);
+                currentBlock.endFill();
+            }
+        });
+
+        // Exportar diseño
+        function exportDesign() {
+            const design = placedBlocks.map(block => ({
+                x: block.x,
+                y: block.y,
+                width: block.width,
+                height: block.height
+            }));
+            console.log(JSON.stringify(design));
+            alert('Diseño exportado a consola (F12).');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'e') exportDesign();
+        });
+
+        // Iniciar
+        currentBlock = createBlock(0);
+    </script>
+</body>
+</html>
