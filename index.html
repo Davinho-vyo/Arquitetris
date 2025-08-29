@@ -13,57 +13,62 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
         }
         #gameContainer {
             position: relative;
-            background: #fff;
-            background-image: linear-gradient(#ccc 1px, transparent 1px), 
-                             linear-gradient(90deg, #ccc 1px, transparent 1px);
-            background-size: 15px 15px; /* Fondo de cuaderno rayado */
+            background: #e0e0e0; /* Fondo gris claro para confirmar render */
         }
         #tips {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: #ff4444; /* Rojo mexicano */
+            background: #ff4444;
             color: white;
             padding: 10px;
             border-radius: 5px;
             display: none;
-            font-size: 14px;
+        }
+        #debug {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #00ff00;
+            color: black;
+            padding: 5px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
     <div id="gameContainer"></div>
     <div id="tips"></div>
+    <div id="debug">Cargando PixiJS...</div>
 
-    <script src="https://pixijs.download/release/pixi.js"></script>
+    <script src="https://pixijs.download/v6.5.2/pixi.min.js"></script>
     <script>
+        // Verificar si PixiJS cargó
+        if (typeof PIXI === 'undefined') {
+            document.getElementById('debug').innerText = 'Error: PixiJS no cargó. Revisa la consola (F12).';
+            throw new Error('PixiJS no está disponible');
+        } else {
+            document.getElementById('debug').innerText = 'PixiJS cargó correctamente';
+        }
+
         // Configuración de PixiJS
         const app = new PIXI.Application({
             width: 800,
             height: 600,
-            backgroundColor: 0x000000,
-            transparent: true
+            backgroundColor: 0xffffff, // Fondo blanco
+            resolution: window.devicePixelRatio || 1
         });
         document.getElementById('gameContainer').appendChild(app.view);
 
-        // Escala: 1m = 100px, 15cm = 15px
-        const SCALE = 100;
         const GRID_SIZE = 15;
-
-        // Bloques de muros
-        const blocks = [
-            { width: 15, height: 100 }, // 15cm x 1m
-            { width: 15, height: 50 }   // 15cm x 0.5m
-        ];
-
+        const block = { width: 15, height: 100 }; // Muro 15cm x 1m
         let currentBlock = null;
         let placedBlocks = [];
 
-        // Grid de fondo
+        // Grid
         const grid = new PIXI.Graphics();
         for (let x = 0; x < app.screen.width; x += GRID_SIZE) {
             grid.lineStyle(1, 0xcccccc, 0.5);
@@ -77,13 +82,9 @@
         }
         app.stage.addChild(grid);
 
-        // Contenedor de bloques
-        const blockContainer = new PIXI.Container();
-        app.stage.addChild(blockContainer);
-
-        // Brújula Luo Pan (círculo simple)
+        // Brújula
         const luopan = new PIXI.Graphics();
-        luopan.beginFill(0x00ff00); // Verde mexicano
+        luopan.beginFill(0x00ff00);
         luopan.drawCircle(0, 0, 50);
         luopan.endFill();
         luopan.x = 750;
@@ -94,30 +95,28 @@
         luopan.on('click', () => {
             rotation += 45;
             luopan.rotation = rotation * Math.PI / 180;
-            // Aquí puedes añadir lógica de Feng Shui según orientación
         });
         app.stage.addChild(luopan);
 
-        // Crear bloque
-        function createBlock(type) {
-            const block = new PIXI.Graphics();
-            block.beginFill(0xff4444); // Rojo vibrante
-            block.drawRect(0, 0, blocks[type].width, blocks[type].height);
-            block.endFill();
-            block.interactive = true;
-            block.buttonMode = true;
-            block.x = 50;
-            block.y = 50 + type * 120;
+        // Bloque
+        function createBlock() {
+            const blockGraphic = new PIXI.Graphics();
+            blockGraphic.beginFill(0xff4444);
+            blockGraphic.drawRect(0, 0, block.width, block.height);
+            blockGraphic.endFill();
+            blockGraphic.interactive = true;
+            blockGraphic.buttonMode = true;
+            blockGraphic.x = 50;
+            blockGraphic.y = 50;
 
-            block.on('pointerdown', onDragStart)
-                .on('pointermove', onDragMove)
-                .on('pointerup', onDragEnd);
+            blockGraphic.on('pointerdown', onDragStart)
+                        .on('pointermove', onDragMove)
+                        .on('pointerup', onDragEnd);
 
-            blockContainer.addChild(block);
-            return block;
+            app.stage.addChild(blockGraphic);
+            return blockGraphic;
         }
 
-        // Drag and drop
         function onDragStart(event) {
             this.data = event.data;
             this.dragging = true;
@@ -138,10 +137,9 @@
             this.data = null;
             this.alpha = 1;
             placedBlocks.push(this);
-            currentBlock = createBlock(Math.floor(Math.random() * blocks.length));
+            currentBlock = createBlock();
         }
 
-        // Verificar Feng Shui
         function checkFengShui(block) {
             const tips = document.getElementById('tips');
             if (block.x > 300 && block.x < 500 && block.y > 200 && block.y < 400) {
@@ -152,7 +150,6 @@
             }
         }
 
-        // Rotar bloque
         document.addEventListener('keydown', (e) => {
             if (e.key === 'r' && currentBlock) {
                 const temp = currentBlock.width;
@@ -161,28 +158,16 @@
                 currentBlock.clear();
                 currentBlock.beginFill(0xff4444);
                 currentBlock.drawRect(0, 0, currentBlock.width, currentBlock.height);
-                currentBlock.endFill();
+                blockGraphic.endFill();
+            }
+            if (e.key === 'e') {
+                const design = placedBlocks.map(b => ({ x: b.x, y: b.y, width: b.width, height: b.height }));
+                console.log(JSON.stringify(design));
+                alert('Diseño exportado a consola (F12).');
             }
         });
 
-        // Exportar diseño
-        function exportDesign() {
-            const design = placedBlocks.map(block => ({
-                x: block.x,
-                y: block.y,
-                width: block.width,
-                height: block.height
-            }));
-            console.log(JSON.stringify(design));
-            alert('Diseño exportado a consola (F12).');
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'e') exportDesign();
-        });
-
-        // Iniciar
-        currentBlock = createBlock(0);
+        currentBlock = createBlock();
     </script>
 </body>
 </html>
