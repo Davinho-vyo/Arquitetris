@@ -3,171 +3,850 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArquiTetris Feng Shui</title>
+    <title>Mi Arquitecto Interior - Diseña tu Espacio Ideal</title>
     <style>
-        body {
+        * {
             margin: 0;
-            background: #f5f5f5;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #gameContainer {
-            position: relative;
-            background: #e0e0e0; /* Fondo gris claro para confirmar render */
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
         }
-        #tips {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #ff4444;
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        #debug {
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            height: 80vh;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .game-board {
+            background: 
+                linear-gradient(90deg, #e8f4f8 1px, transparent 1px),
+                linear-gradient(180deg, #e8f4f8 1px, transparent 1px),
+                #f8f9fa;
+            background-size: 20px 20px;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 3px solid #34495e;
+            overflow: hidden;
+        }
+
+        .notebook-pattern {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #00ff00;
-            color: black;
-            padding: 5px;
+            top: 0;
+            left: 40px;
+            width: 2px;
+            height: 100%;
+            background: #ff6b6b;
+            opacity: 0.6;
+        }
+
+        .notebook-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                transparent,
+                transparent 24px,
+                #bdc3c7 24px,
+                #bdc3c7 26px
+            );
+            opacity: 0.3;
+        }
+
+        .tools h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .wall-piece {
+            background: linear-gradient(135deg, #8b4513, #cd853f);
+            border: 2px solid #654321;
             border-radius: 5px;
+            margin: 10px 0;
+            padding: 15px;
+            cursor: grab;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .wall-piece:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .wall-piece:active {
+            cursor: grabbing;
+        }
+
+        .feng-shui-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .feng-shui-section h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .compass {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff, #f39c12, #8b4513);
+            margin: 15px auto;
+            position: relative;
+            border: 3px solid #654321;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .compass::before {
+            content: "N";
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #c0392b;
+        }
+
+        .compass::after {
+            content: "⬆";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #c0392b;
+        }
+
+        .services h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .package {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .package:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .package h4 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .package .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 8px;
+        }
+
+        .package ul {
+            font-size: 0.9rem;
+            padding-left: 15px;
+        }
+
+        .advice-buttons {
+            margin-top: 20px;
+        }
+
+        .advice-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .advice-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .login-section {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .placed-wall {
+            position: absolute;
+            background: linear-gradient(135deg, #8b4513, #cd853f);
+            border: 2px solid #654321;
+            border-radius: 3px;
+            z-index: 10;
+            cursor: move;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #c0392b;
+        }
+
+        .mexican-decoration {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.7;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .decoration1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .decoration2 { top: 20%; right: 8%; animation-delay: 2s; }
+        .decoration3 { bottom: 15%; left: 10%; animation-delay: 4s; }
+        .decoration4 { bottom: 25%; right: 12%; animation-delay: 6s; }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 250px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                height: auto;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer"></div>
-    <div id="tips"></div>
-    <div id="debug">Cargando PixiJS...</div>
+    <div class="mexican-decoration decoration1">🌺</div>
+    <div class="mexican-decoration decoration2">🏠</div>
+    <div class="mexican-decoration decoration3">🌵</div>
+    <div class="mexican-decoration decoration4">☀️</div>
 
-    <script src="https://pixijs.download/v6.5.2/pixi.min.js"></script>
+    <div class="login-section">
+        <button class="login-btn" onclick="showLogin()">Iniciar Juego</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏡 Mi Arquitecto Interior 🏡</h1>
+            <p>Diseña tu espacio ideal con Feng Shui y diversión</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar tools">
+                <h3>🧱 Piezas de Construcción</h3>
+                
+                <div class="wall-piece" draggable="true" data-width="100" data-height="15">
+                    Muro 1m × 15cm
+                </div>
+                
+                <div class="wall-piece" draggable="true" data-width="50" data-height="15">
+                    Muro 50cm × 15cm
+                </div>
+
+                <div class="wall-piece" draggable="true" data-width="75" data-height="15">
+                    Muro 75cm × 15cm
+                </div>
+
+                <div class="wall-piece" draggable="true" data-width="150" data-height="15">
+                    Muro 1.5m × 15cm
+                </div>
+
+                <div class="feng-shui-section">
+                    <h4>🧭 Brújula Feng Shui (Luo Pan)</h4>
+                    <div class="compass"></div>
+                    <p style="font-size: 0.9rem; text-align: center;">
+                        El Norte magnético influye en la energía de tu hogar
+                    </p>
+                </div>
+
+                <div class="advice-buttons">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">📋 Consejos de Construcción</h4>
+                    <button class="advice-btn" onclick="showAdvice('programa')">Programa de Necesidades</button>
+                    <button class="advice-btn" onclick="showAdvice('terreno')">Limpieza de Terreno</button>
+                    <button class="advice-btn" onclick="showAdvice('cimentacion')">Cimentación</button>
+                    <button class="advice-btn" onclick="showAdvice('albanileria')">Albañilería</button>
+                    <button class="advice-btn" onclick="showAdvice('gastos')">Control de Gastos</button>
+                    <button class="advice-btn" onclick="showAdvice('acabados')">Acabados</button>
+                </div>
+            </div>
+
+            <div class="game-board" id="gameBoard">
+                <div class="notebook-pattern"></div>
+                <div class="notebook-lines"></div>
+                <div style="position: absolute; top: 20px; left: 60px; color: #7f8c8d; font-size: 1.1rem; font-weight: bold;">
+                    Arrastra las piezas aquí para crear tu plano 🏗️
+                </div>
+            </div>
+
+            <div class="sidebar services">
+                <h3>💼 Servicios Premium</h3>
+
+                <div class="package" onclick="selectPackage(1)">
+                    <h4>📐 Paquete Básico</h4>
+                    <div class="price">$9 USD</div>
+                    <ul>
+                        <li>Planos con medidas exactas</li>
+                        <li>Revisión general de diseño</li>
+                        <li>3 renders de fachada</li>
+                        <li>Archivo imprimible</li>
+                    </ul>
+                </div>
+
+                <div class="package" onclick="selectPackage(2)">
+                    <h4>📊 Paquete Intermedio</h4>
+                    <div class="price">$12 USD</div>
+                    <ul>
+                        <li>Planos con medidas exactas</li>
+                        <li>2 revisiones del proyecto</li>
+                        <li>5 renders de fachadas</li>
+                        <li>Asesoría básica incluida</li>
+                    </ul>
+                </div>
+
+                <div class="package" onclick="selectPackage(3)">
+                    <h4>🏆 Paquete Premium</h4>
+                    <div class="price">$15 USD</div>
+                    <ul>
+                        <li>Plantas arquitectónicas completas</li>
+                        <li>2 cortes generales</li>
+                        <li>3 revisiones del proyecto</li>
+                        <li>Modelado 3D completo</li>
+                        <li>10 renders generales</li>
+                    </ul>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 15px; margin: 15px 0; border-radius: 10px; text-align: center;">
+                    <h4>🎯 Asesoría Ejecutiva</h4>
+                    <div style="font-size: 1.3rem; font-weight: bold; color: #f1c40f;">$21 USD</div>
+                    <p style="font-size: 0.9rem;">120 min de asesoría especializada</p>
+                    <small>*Requiere proyecto arquitectónico listo</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLogin()">&times;</span>
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">🎮 ¡Bienvenido a tu Arquitecto Interior!</h2>
+            <form>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; color: #34495e; font-weight: bold;">Nombre:</label>
+                    <input type="text" style="width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; color: #34495e; font-weight: bold;">Email:</label>
+                    <input type="email" style="width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 1rem;">
+                </div>
+                <button type="button" onclick="startGame()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+                    🚀 ¡Comenzar a Diseñar!
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Consejos -->
+    <div id="adviceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdvice()">&times;</span>
+            <h2 id="adviceTitle" style="color: #2c3e50; text-align: center; margin-bottom: 20px;"></h2>
+            <div id="adviceContent" style="color: #34495e; line-height: 1.6;"></div>
+        </div>
+    </div>
+
     <script>
-        // Verificar si PixiJS cargó
-        if (typeof PIXI === 'undefined') {
-            document.getElementById('debug').innerText = 'Error: PixiJS no cargó. Revisa la consola (F12).';
-            throw new Error('PixiJS no está disponible');
-        } else {
-            document.getElementById('debug').innerText = 'PixiJS cargó correctamente';
-        }
+        let draggedElement = null;
+        let wallCounter = 0;
 
-        // Configuración de PixiJS
-        const app = new PIXI.Application({
-            width: 800,
-            height: 600,
-            backgroundColor: 0xffffff, // Fondo blanco
-            resolution: window.devicePixelRatio || 1
+        // Funcionalidad de drag and drop
+        document.querySelectorAll('.wall-piece').forEach(piece => {
+            piece.addEventListener('dragstart', function(e) {
+                draggedElement = this;
+                e.dataTransfer.effectAllowed = 'copy';
+            });
         });
-        document.getElementById('gameContainer').appendChild(app.view);
 
-        const GRID_SIZE = 15;
-        const block = { width: 15, height: 100 }; // Muro 15cm x 1m
-        let currentBlock = null;
-        let placedBlocks = [];
+        const gameBoard = document.getElementById('gameBoard');
 
-        // Grid
-        const grid = new PIXI.Graphics();
-        for (let x = 0; x < app.screen.width; x += GRID_SIZE) {
-            grid.lineStyle(1, 0xcccccc, 0.5);
-            grid.moveTo(x, 0);
-            grid.lineTo(x, app.screen.height);
-        }
-        for (let y = 0; y < app.screen.height; y += GRID_SIZE) {
-            grid.lineStyle(1, 0xcccccc, 0.5);
-            grid.moveTo(0, y);
-            grid.lineTo(app.screen.width, y);
-        }
-        app.stage.addChild(grid);
-
-        // Brújula
-        const luopan = new PIXI.Graphics();
-        luopan.beginFill(0x00ff00);
-        luopan.drawCircle(0, 0, 50);
-        luopan.endFill();
-        luopan.x = 750;
-        luopan.y = 50;
-        luopan.interactive = true;
-        luopan.buttonMode = true;
-        let rotation = 0;
-        luopan.on('click', () => {
-            rotation += 45;
-            luopan.rotation = rotation * Math.PI / 180;
+        gameBoard.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
         });
-        app.stage.addChild(luopan);
 
-        // Bloque
-        function createBlock() {
-            const blockGraphic = new PIXI.Graphics();
-            blockGraphic.beginFill(0xff4444);
-            blockGraphic.drawRect(0, 0, block.width, block.height);
-            blockGraphic.endFill();
-            blockGraphic.interactive = true;
-            blockGraphic.buttonMode = true;
-            blockGraphic.x = 50;
-            blockGraphic.y = 50;
-
-            blockGraphic.on('pointerdown', onDragStart)
-                        .on('pointermove', onDragMove)
-                        .on('pointerup', onDragEnd);
-
-            app.stage.addChild(blockGraphic);
-            return blockGraphic;
-        }
-
-        function onDragStart(event) {
-            this.data = event.data;
-            this.dragging = true;
-            this.alpha = 0.8;
-        }
-
-        function onDragMove() {
-            if (this.dragging) {
-                const newPosition = this.data.getLocalPosition(this.parent);
-                this.x = Math.round(newPosition.x / GRID_SIZE) * GRID_SIZE;
-                this.y = Math.round(newPosition.y / GRID_SIZE) * GRID_SIZE;
-                checkFengShui(this);
+        gameBoard.addEventListener('drop', function(e) {
+            e.preventDefault();
+            if (draggedElement) {
+                const rect = gameBoard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                createWall(x, y, draggedElement.dataset.width, draggedElement.dataset.height);
+                draggedElement = null;
             }
+        });
+
+        function createWall(x, y, width, height) {
+            const wall = document.createElement('div');
+            wall.className = 'placed-wall';
+            wall.style.left = x - (width/2) + 'px';
+            wall.style.top = y - (height/2) + 'px';
+            wall.style.width = width + 'px';
+            wall.style.height = height + 'px';
+            wall.id = 'wall-' + (++wallCounter);
+            
+            // Hacer la pieza movible
+            wall.addEventListener('mousedown', startDrag);
+            
+            // Doble click para eliminar
+            wall.addEventListener('dblclick', function() {
+                wall.remove();
+            });
+            
+            gameBoard.appendChild(wall);
         }
 
-        function onDragEnd() {
-            this.dragging = false;
-            this.data = null;
-            this.alpha = 1;
-            placedBlocks.push(this);
-            currentBlock = createBlock();
+        function startDrag(e) {
+            const wall = e.target;
+            const startX = e.clientX - wall.offsetLeft;
+            const startY = e.clientY - wall.offsetTop;
+
+            function drag(e) {
+                const rect = gameBoard.getBoundingClientRect();
+                let newX = e.clientX - startX - rect.left;
+                let newY = e.clientY - startY - rect.top;
+                
+                // Mantener dentro del tablero
+                newX = Math.max(0, Math.min(newX, gameBoard.offsetWidth - wall.offsetWidth));
+                newY = Math.max(0, Math.min(newY, gameBoard.offsetHeight - wall.offsetHeight));
+                
+                wall.style.left = newX + 'px';
+                wall.style.top = newY + 'px';
+            }
+
+            function stopDrag() {
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', stopDrag);
+            }
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
         }
 
-        function checkFengShui(block) {
-            const tips = document.getElementById('tips');
-            if (block.x > 300 && block.x < 500 && block.y > 200 && block.y < 400) {
-                tips.style.display = 'block';
-                tips.innerText = "¡Cuidado! Evita bloquear el centro para un mejor flujo de Chi.";
+        // Funciones del modal
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function startGame() {
+            closeLogin();
+            alert('¡Bienvenido! Ahora puedes arrastrar las piezas al tablero para crear tu plano. ¡Doble click en una pieza colocada para eliminarla!');
+        }
+
+        function selectPackage(packageNum) {
+            const packages = ['Básico', 'Intermedio', 'Premium'];
+            alert(`¡Excelente elección! Has seleccionado el Paquete ${packages[packageNum-1]}. En una versión completa, aquí se procesaría el pago y se te contactaría para comenzar con tu proyecto.`);
+        }
+
+        function showAdvice(topic) {
+            const adviceContent = {
+                'programa': {
+                    title: '📋 Programa de Necesidades',
+                    content: `<p><strong>¿Qué es?</strong> Es la lista detallada de todos los espacios y características que necesitas en tu hogar.</p>
+                    <p><strong>Pasos clave:</strong></p>
+                    <ul>
+                        <li>Define el número de habitantes y sus edades</li>
+                        <li>Lista las actividades principales de cada persona</li>
+                        <li>Determina espacios esenciales: recámaras, baños, cocina, sala, comedor</li>
+                        <li>Considera espacios adicionales: estudio, lavandería, jardín</li>
+                        <li>Establece prioridades según tu presupuesto</li>
+                    </ul>
+                    <p><strong>💡 Tip Feng Shui:</strong> La entrada principal no debe alinearse directamente con la puerta trasera para mantener la energía positiva.</p>`
+                },
+                'terreno': {
+                    title: '🌱 Limpieza de Terreno',
+                    content: `<p><strong>Preparación del sitio:</strong> Base fundamental para una construcción exitosa.</p>
+                    <p><strong>Actividades principales:</strong></p>
+                    <ul>
+                        <li>Remoción de vegetación y escombros</li>
+                        <li>Nivelación del terreno</li>
+                        <li>Trazo y marcado del área de construcción</li>
+                        <li>Excavación para cimentaciones</li>
+                        <li>Preparación de accesos para maquinaria</li>
+                    </ul>
+                    <p><strong>⚠️ Importante:</strong> Verificar servicios subterráneos (agua, gas, electricidad) antes de excavar.</p>`
+                },
+                'cimentacion': {
+                    title: '🏗️ Cimentación',
+                    content: `<p><strong>Base sólida:</strong> La cimentación es lo más importante de tu construcción.</p>
+                    <p><strong>Tipos comunes:</strong></p>
+                    <ul>
+                        <li><strong>Zapatas aisladas:</strong> Para cargas puntuales</li>
+                        <li><strong>Zapatas corridas:</strong> Para muros de carga</li>
+                        <li><strong>Losa de cimentación:</strong> Para terrenos blandos</li>
+                    </ul>
+                    <p><strong>Materiales clave:</strong> Concreto f'c=200 kg/cm², acero de refuerzo, grava, arena.</p>
+                    <p><strong>💰 Costo aproximado:</strong> 15-20% del presupuesto total de obra.</p>`
+                },
+                'albanileria': {
+                    title: '🧱 Albañilería',
+                    content: `<p><strong>Construcción de muros:</strong> Levantamiento de la estructura principal.</p>
+                    <p><strong>Materiales principales:</strong></p>
+                    <ul>
+                        <li>Tabique rojo recocido o block de concreto</li>
+                        <li>Mortero cal-arena o cemento-arena</li>
+                        <li>Castillos y cadenas de concreto armado</li>
+                        <li>Malla electrosoldada para refuerzo</li>
+                    </ul>
+                    <p><strong>🔧 Tips importantes:</strong> Usar plomada y nivel constantemente, humedecer materiales, respetar juntas de dilatación.</p>`
+                },
+                'gastos': {
+                    title: '💰 Control de Gastos',
+                    content: `<p><strong>Manejo inteligente del presupuesto:</strong> Clave para el éxito de tu proyecto.</p>
+                    <p><strong>Distribución típica:</strong></p>
+                    <ul>
+                        <li>Cimentación: 15-20%</li>
+                        <li>Estructura: 25-30%</li>
+                        <li>Albañilería: 20-25%</li>
+                        <li>Instalaciones: 15-20%</li>
+                        <li>Acabados: 20-30%</li>
+                    </ul>
+                    <p><strong>📊 Consejos:</strong> Reserva 10% adicional para imprevistos, compara precios, compra material por etapas.</p>`
+                },
+                'acabados': {
+                    title: '✨ Acabados',
+                    content: `<p><strong>Toque final:</strong> Los acabados definen la calidad y estética de tu hogar.</p>
+                    <p><strong>Principales categorías:</strong></p>
+                    <ul>
+                        <li><strong>Pisos:</strong> Cerámica, madera, concreto pulido</li>
+                        <li><strong>Muros:</strong> Pintura, pasta, papel tapiz, texturas</li>
+                        <li><strong>Plafones:</strong> Yeso, tablaroca, madera</li>
+                        <li><strong>Cancelería:</strong> Puertas, ventanas, herrería</li>
+                    </ul>
+                    <p><strong>🎨 Tendencias mexicanas:</strong> Colores tierra, talavera, texturas naturales, patios centrales.</p>`
+                }
+            };
+
+            const advice = adviceContent[topic];
+            document.getElementById('adviceTitle').textContent = advice.title;
+            document.getElementById('adviceContent').innerHTML = advice.content;
+            document.getElementById('adviceModal').style.display = 'block';
+        }
+
+        function closeAdvice() {
+            document.getElementById('adviceModal').style.display = 'none';
+        }
+
+        // Cerrar modales con clic fuera
+        window.addEventListener('click', function(e) {
+            const loginModal = document.getElementById('loginModal');
+            const adviceModal = document.getElementById('adviceModal');
+            
+            if (e.target === loginModal) {
+                closeLogin();
+            }
+            if (e.target === adviceModal) {
+                closeAdvice();
+            }
+        });
+
+        // Funciones adicionales de la plataforma
+        function saveProject() {
+            const walls = document.querySelectorAll('.placed-wall');
+            const projectData = [];
+            
+            walls.forEach(wall => {
+                projectData.push({
+                    id: wall.id,
+                    x: wall.style.left,
+                    y: wall.style.top,
+                    width: wall.style.width,
+                    height: wall.style.height
+                });
+            });
+            
+            localStorage.setItem('miProyecto', JSON.stringify(projectData));
+            alert('¡Proyecto guardado exitosamente! 💾');
+        }
+
+        function loadProject() {
+            const savedProject = localStorage.getItem('miProyecto');
+            if (savedProject) {
+                const projectData = JSON.parse(savedProject);
+                
+                // Limpiar tablero actual
+                document.querySelectorAll('.placed-wall').forEach(wall => wall.remove());
+                
+                // Recrear muros guardados
+                projectData.forEach(wallData => {
+                    const wall = document.createElement('div');
+                    wall.className = 'placed-wall';
+                    wall.id = wallData.id;
+                    wall.style.left = wallData.x;
+                    wall.style.top = wallData.y;
+                    wall.style.width = wallData.width;
+                    wall.style.height = wallData.height;
+                    
+                    wall.addEventListener('mousedown', startDrag);
+                    wall.addEventListener('dblclick', function() {
+                        wall.remove();
+                    });
+                    
+                    gameBoard.appendChild(wall);
+                });
+                
+                alert('¡Proyecto cargado exitosamente! 📂');
             } else {
-                tips.style.display = 'none';
+                alert('No hay proyectos guardados');
             }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'r' && currentBlock) {
-                const temp = currentBlock.width;
-                currentBlock.width = currentBlock.height;
-                currentBlock.height = temp;
-                currentBlock.clear();
-                currentBlock.beginFill(0xff4444);
-                currentBlock.drawRect(0, 0, currentBlock.width, currentBlock.height);
-                blockGraphic.endFill();
+        function clearBoard() {
+            if (confirm('¿Estás seguro de que quieres limpiar el tablero?')) {
+                document.querySelectorAll('.placed-wall').forEach(wall => wall.remove());
+                wallCounter = 0;
             }
-            if (e.key === 'e') {
-                const design = placedBlocks.map(b => ({ x: b.x, y: b.y, width: b.width, height: b.height }));
-                console.log(JSON.stringify(design));
-                alert('Diseño exportado a consola (F12).');
-            }
-        });
+        }
 
-        currentBlock = createBlock();
+        function exportProject() {
+            const walls = document.querySelectorAll('.placed-wall');
+            if (walls.length === 0) {
+                alert('No hay elementos para exportar. Agrega algunas piezas primero.');
+                return;
+            }
+            
+            alert('📋 Función de exportación activada!\n\nEn la versión completa:\n• Se generaría un PDF con tu diseño\n• Incluiría medidas exactas\n• Tendría vista en planta profesional\n• Se enviaría a tu email');
+        }
+
+        // Agregar controles al tablero
+        function addGameControls() {
+            const controlsHTML = `
+                <div style="position: absolute; top: 10px; right: 10px; z-index: 100;">
+                    <button onclick="saveProject()" style="margin: 2px; padding: 8px 12px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">💾 Guardar</button>
+                    <button onclick="loadProject()" style="margin: 2px; padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">📂 Cargar</button>
+                    <button onclick="clearBoard()" style="margin: 2px; padding: 8px 12px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">🗑️ Limpiar</button>
+                    <button onclick="exportProject()" style="margin: 2px; padding: 8px 12px; background: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">📤 Exportar</button>
+                </div>
+            `;
+            gameBoard.innerHTML += controlsHTML;
+        }
+
+        // Tips de Feng Shui rotativos
+        const fengShuiTips = [
+            "💡 La cocina no debe estar frente a la entrada principal",
+            "🌱 Coloca plantas en el sector sureste para la prosperidad",
+            "🚪 Evita que las puertas se enfrenten directamente",
+            "💧 El agua debe fluir hacia el interior de la casa",
+            "🛏️ La cama nunca debe estar bajo una ventana",
+            "🪑 Los sofás deben estar contra una pared sólida"
+        ];
+
+        let currentTipIndex = 0;
+        
+        function showFengShuiTip() {
+            const tip = fengShuiTips[currentTipIndex];
+            const notification = document.createElement('div');
+            notification.innerHTML = tip;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #f39c12, #e67e22);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-weight: bold;
+                animation: slideUp 0.5s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideDown 0.5s ease forwards';
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+            
+            currentTipIndex = (currentTipIndex + 1) % fengShuiTips.length;
+        }
+
+        // Animación inicial y configuración
+        window.addEventListener('load', function() {
+            addGameControls();
+            
+            // Agregar estilos para las animaciones
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideUp {
+                    from { transform: translate(-50%, 100px); opacity: 0; }
+                    to { transform: translate(-50%, 0); opacity: 1; }
+                }
+                @keyframes slideDown {
+                    from { transform: translate(-50%, 0); opacity: 1; }
+                    to { transform: translate(-50%, 100px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(function() {
+                alert('¡Bienvenido a Mi Arquitecto Interior! 🏡\n\n✨ Haz clic en "Iniciar Juego" para comenzar\n🧱 Arrastra las piezas al tablero para diseñar\n💾 Usa los controles para guardar tu progreso\n📱 Explora los servicios premium\n💡 Consulta consejos de construcción\n\n¡Diseña el hogar de tus sueños!');
+                
+                // Iniciar tips de Feng Shui cada 15 segundos
+                setInterval(showFengShuiTip, 15000);
+                
+                // Primer tip después de 5 segundos
+                setTimeout(showFengShuiTip, 5000);
+            }, 1000);
+        });
     </script>
 </body>
 </html>
